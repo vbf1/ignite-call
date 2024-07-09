@@ -1,12 +1,19 @@
 import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
 import { Container, Header } from "../styles";
-import { ArrowRight } from "phosphor-react";
+import { ArrowRight, Check } from "phosphor-react";
 
 import { api } from "@/src/lib/axios";
 import { ConnectBox, ConnectItem } from "./styles";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Register() {
-  // async function handleRegister() {}
+  const session = useSession();
+
+  const isSignedIn = session.status === "authenticated";
+
+  async function handleConnectCalendar() {
+    await signIn("google");
+  }
 
   return (
     <Container>
@@ -21,12 +28,23 @@ export default function Register() {
       <ConnectBox>
         <ConnectItem>
           <Text>Google Calendar</Text>
-          <Button variant="secondary" size="sm">
-            Conectar
-            <ArrowRight />
-          </Button>
+          {isSignedIn ? (
+            <Button size="sm" disabled={isSignedIn}>
+              Conectado
+              <Check />
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleConnectCalendar}
+            >
+              Conectar
+              <ArrowRight />
+            </Button>
+          )}
         </ConnectItem>
-        <Button type="submit">
+        <Button type="submit" disabled={!isSignedIn}>
           Próximo passo
           <ArrowRight />
         </Button>
